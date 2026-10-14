@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Main page of local_helloworld: post a message and see all messages.
+ * Main page of local_helloworld: post, list and delete messages.
  *
  * @package    local_helloworld
  * @copyright  2026 Nandika
@@ -26,11 +26,42 @@ require_once(__DIR__ . '/../../config.php');
 
 require_login();
 
+// the delete icon and the confirm icon will have a optional uurl parameter  like index.php?delete=2
+$delete = optional_param('delete', 0, PARAM_INT);
+$confirm = optional_param('confirm', 0, PARAM_BOOL);
+
 $url = new moodle_url('/local/helloworld/index.php');
+$context = context_system::instance();
 $PAGE->set_url($url);
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'local_helloworld'));
 $PAGE->set_heading(get_string('pluginname', 'local_helloworld'));
+
+$candelete = has_capability('local/helloworld:deletemessage', $context);
+
+// Delete a message: first ask "are you sure?", then delete after confirmation.
+if ($delete) {
+    require_capability('local/helloworld:deletemessage', $context);
+    $todelete = $DB->get_record('local_helloworld_messages', ['id' => $delete], '*', MUST_EXIST);
+
+    if ($confirm) {
+        require_sesskey();
+        $DB->delete_records('local_helloworld_messages', ['id' => $todelete->id]);
+        redirect($url, get_string('messagedeleted', 'local_helloworld'), null,
+            \core\output\notification::NOTIFY_SUCCESS);
+    }
+
+    $confirmurl = new moodle_url($url, ['delete' => $todelete->id, 'confirm' => 1, 'sesskey' => sesskey()]);
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->confirm(
+        get_string('confirmdelete', 'local_helloworld', s($todelete->message)),
+        $confirmurl,
+        $url
+    );
+    echo $OUTPUT->footer();
+    exit;
+}
 
 $form = new \local_helloworld\form\message_form($url);
 
@@ -40,7 +71,6 @@ if ($data = $form->get_data()) {
     $record->message = $data->message;
     $record->userid = $USER->id;
     $record->timecreated = time();
-    //Moodle uses $DB as an abstraction layer. That means your plugin can use Moodle's database API instead of writing database-specific insertion code for MySQL or PostgreSQL.
     $DB->insert_record('local_helloworld_messages', $record);
 
     redirect($url, get_string('messagesaved', 'local_helloworld'), null,
@@ -72,7 +102,14 @@ if (empty($messages)) {
         $a->name = s($message->firstname);
         $a->time = userdate($message->timecreated);
         $a->message = s($message->message);
-        $items[] = get_string('messageline', 'local_helloworld', $a);
+        $line = get_string('messageline', 'local_helloworld', $a);
+
+        if ($candelete) {
+            $deleteurl = new moodle_url($url, ['delete' => $message->id]);
+            $line .= ' ' . $OUTPUT->action_icon($deleteurl, new pix_icon('t/delete', get_string('delete')));
+        }
+
+        $items[] = $line;
     }
     echo html_writer::alist($items);
 }

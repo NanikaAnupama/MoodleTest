@@ -25,9 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['allmessages'] = 'All messages';
+$string['confirmdelete'] = 'Are you sure you want to delete the message "{$a}"?';
 $string['greeting'] = 'Hello, {$a}!';
+$string['helloworld:deletemessage'] = 'Delete messages';
+$string['messagedeleted'] = 'The message has been deleted.';
 $string['messageline'] = '{$a->name} ({$a->time}): {$a->message}';
 $string['messagesaved'] = 'Your message has been saved.';
 $string['nomessages'] = 'No messages yet. Be the first!';
 $string['pluginname'] = 'Hello World';
 $string['yourmessage'] = 'Your message';
+
