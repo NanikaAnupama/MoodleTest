@@ -24,7 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['allmessages'] = 'All messages';
 $string['greeting'] = 'Hello, {$a}!';
+$string['messageline'] = '{$a->name} ({$a->time}): {$a->message}';
+$string['messagesaved'] = 'Your message has been saved.';
+$string['nomessages'] = 'No messages yet. Be the first!';
 $string['pluginname'] = 'Hello World';
 $string['yourmessage'] = 'Your message';
-$string['yousaid'] = 'You said: {$a}';
