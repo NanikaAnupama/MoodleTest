@@ -24,4 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['greeting'] = 'Hello, {$a}!';
 $string['pluginname'] = 'Hello World';
+$string['yourmessage'] = 'Your message';
+$string['yousaid'] = 'You said: {$a}';
