@@ -1,0 +1,66 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_helloworld/messages
+
+    List of all messages on the Hello World page.
+
+    Context variables required for this template:
+    * hasmessages - Whether there is at least one message.
+    * messages - The messages, each with:
+        * name - First name of the person who posted it.
+        * time - When it was posted, already formatted as a date.
+        * message - The message text.
+        * candelete - Whether the current user may delete it.
+        * deleteurl - Address that starts deleting this message.
+
+    Example context (json):
+    {
+        "hasmessages": true,
+        "messages": [
+            {
+                "name": "Nandika",
+                "time": "Wednesday, 14 October 2026, 10:32 AM",
+                "message": "Hello everyone!",
+                "candelete": true,
+                "deleteurl": "https://example.com/local/helloworld/index.php?delete=1"
+            }
+        ]
+    }
+}}
+<h3>{{#str}} allmessages, local_helloworld {{/str}}</h3>
+{{#hasmessages}}
+    <ul class="list-group">
+        {{#messages}}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                    <strong>{{name}}</strong>
+                    <small class="text-muted ms-2">{{time}}</small>
+                    <p class="mb-0">{{message}}</p>
+                </div>
+                {{#candelete}}
+                    <a href="{{deleteurl}}">
+                        {{#pix}} t/delete, core, {{#str}} delete {{/str}} {{/pix}}
+                    </a>
+                {{/candelete}}
+            </li>
+        {{/messages}}
+    </ul>
+{{/hasmessages}}
+{{^hasmessages}}
+    <p>{{#str}} nomessages, local_helloworld {{/str}}</p>
+{{/hasmessages}}

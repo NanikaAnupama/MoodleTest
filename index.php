@@ -26,7 +26,6 @@ require_once(__DIR__ . '/../../config.php');
 
 require_login();
 
-// the delete icon and the confirm icon will have a optional uurl parameter  like index.php?delete=2
 $delete = optional_param('delete', 0, PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 
@@ -84,6 +83,19 @@ $sql = "SELECT m.id, m.message, m.timecreated, u.firstname
       ORDER BY m.timecreated DESC";
 $messages = $DB->get_records_sql($sql);
 
+// Prepare plain values for the template. The template escapes them itself.
+$templatemessages = [];
+foreach ($messages as $message) {
+    $deleteurl = new moodle_url($url, ['delete' => $message->id]);
+    $templatemessages[] = [
+        'name' => $message->firstname,
+        'time' => userdate($message->timecreated),
+        'message' => $message->message,
+        'candelete' => $candelete,
+        'deleteurl' => $deleteurl->out(false),
+    ];
+}
+
 echo $OUTPUT->header();
 
 $greeting = get_string('greeting', 'local_helloworld', s($USER->firstname));
@@ -91,27 +103,9 @@ echo $OUTPUT->heading($greeting);
 
 $form->display();
 
-echo $OUTPUT->heading(get_string('allmessages', 'local_helloworld'), 3);
-
-if (empty($messages)) {
-    echo html_writer::tag('p', get_string('nomessages', 'local_helloworld'));
-} else {
-    $items = [];
-    foreach ($messages as $message) {
-        $a = new stdClass();
-        $a->name = s($message->firstname);
-        $a->time = userdate($message->timecreated);
-        $a->message = s($message->message);
-        $line = get_string('messageline', 'local_helloworld', $a);
-
-        if ($candelete) {
-            $deleteurl = new moodle_url($url, ['delete' => $message->id]);
-            $line .= ' ' . $OUTPUT->action_icon($deleteurl, new pix_icon('t/delete', get_string('delete')));
-        }
-
-        $items[] = $line;
-    }
-    echo html_writer::alist($items);
-}
+echo $OUTPUT->render_from_template('local_helloworld/messages', [
+    'hasmessages' => !empty($templatemessages),
+    'messages' => $templatemessages,
+]);
 
 echo $OUTPUT->footer();
