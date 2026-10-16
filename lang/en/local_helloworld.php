@@ -32,6 +32,10 @@ $string['messagedeleted'] = 'The message has been deleted.';
 $string['messagesaved'] = 'Your message has been saved.';
 $string['nomessages'] = 'No messages yet. Be the first!';
 $string['pluginname'] = 'Hello World';
+$string['privacy:metadata:messages'] = 'Messages that users post on the Hello World page.';
+$string['privacy:metadata:messages:message'] = 'The text of the message.';
+$string['privacy:metadata:messages:timecreated'] = 'The time when the message was posted.';
+$string['privacy:metadata:messages:userid'] = 'The ID of the user who posted the message.';
 $string['yourmessage'] = 'Your message';
 
 
